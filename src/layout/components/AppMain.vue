@@ -1,5 +1,6 @@
 <template>
   <section class="app-main">
+    <TagsView></TagsView>
     <transition name="fade-transform" mode="out-in">
       <router-view :key="key" />
     </transition>
@@ -7,11 +8,23 @@
 </template>
 
 <script>
+import { isTags } from '@/utils/tags'
+import TagsView from "@/components/TagsView"
 export default {
   name: 'AppMain',
   computed: {
     key() {
       return this.$route.path
+    }
+  },
+  components : {
+    TagsView
+  },
+  watch : {
+    $route(to,from){
+      if(isTags(to.path)) return
+      const {meta, path} = to
+      this.$store.dispatch('tagsView/setTagsView',{meta, path})
     }
   }
 }
