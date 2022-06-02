@@ -26,6 +26,22 @@ const mutations = {
       state.tagsView.push(tagsView)
       Cookies.set("tagsView",state.tagsView)
     }
+  },
+  REMOVE_TAGS_VIEW(state, tagsView){
+    if(tagsView.action === 'current'){
+      state.tagsView.splice(tagsView.index,1)
+    }else if(tagsView.action === 'other'){
+
+      // 删除右侧的
+      state.tagsView.splice(tagsView.index+1)
+      // 删除左侧
+      state.tagsView.splice(1,-1)
+
+    }else if(tagsView.action === 'all'){
+      state.tagsView.splice(1)
+    }
+
+    Cookies.set("tagsView",state.tagsView)
   }
 }
 
@@ -35,8 +51,10 @@ const actions = {
    * @param commit
    */
   setTagsView({commit},payload){
-    console.log("payload=>",payload)
     commit('SET_TAGS_VIEW',payload)
+  },
+  removeTagsView({commit},payload){
+    commit("REMOVE_TAGS_VIEW",payload)
   }
 }
 

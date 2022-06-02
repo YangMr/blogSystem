@@ -20,6 +20,11 @@ export default {
   components : {
     TagsView
   },
+  created() {
+    if(isTags(this.$route)) return
+    const {meta, path} = this.$route
+    this.$store.dispatch('tagsView/setTagsView',{meta, path})
+  },
   watch : {
     $route(to,from){
       if(isTags(to.path)) return

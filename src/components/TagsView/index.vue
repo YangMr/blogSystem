@@ -1,11 +1,12 @@
 <template>
   <div class="tags-view-container">
-    <router-link @contextmenu.native.prevent="openMenu($event, index)" :style="{color : isActive(item) ? '#fff' : '', backgroundColor : isActive(item) ? '#42b983' : '', borderColor :isActive(item) ? '#42b983' : '' }" class="tags-view-item" :to="item.path" v-for="(item,index) in tagsViewList" :key="index">
+
+    <router-link @contextmenu.native.prevent="openMenu($event, index)" :style="{color : isActive(item) ? '#fff' : '', backgroundColor : isActive(item) ? '#42b983' : '', borderColor :isActive(item) ? '#42b983' : '' }" class="tags-view-item" :class="{active :isActive(item) }" :to="item.path" v-for="(item,index) in tagsViewList" :key="index">
       {{item.meta.title}}
-      <i v-show="!isActive(item)" class="el-icon-close" v-if="!(index === 0)" @click.prevent.stop="onCloseClick(index)"/>
+      <i v-if="!(index===0)" class="el-icon-close"  @click.prevent.stop="onCloseClick(index)"/>
     </router-link>
 
-    <ContextMenu v-if="visible" :menuStyle="menuStyle" :index="selectIndex"></ContextMenu>
+    <ContextMenu v-if="visible" :menuStyle="menuStyle" :index="index"></ContextMenu>
 
 <!--    tagsView:-->
 <!--      1. 获取到所点击的菜单数据源-->
@@ -29,18 +30,30 @@ export default {
   name: 'TagsView',
   computed: {
     tagsViewList(){
-      console.log(this.$store)
-      console.log(this.$store.getters.tagsView)
       return this.$store.getters.tagsView
     }
   },
   data(){
     return {
       visible : false,
-      selectIndex : 0,
+      index : 0,
       menuStyle : {
         left : 0,
         top : 0
+      }
+    }
+  },
+  watch : {
+    /**
+     * 当contextmenu 显示的时候， 给body绑定点击事件， 执行关闭contextmenu 的方法
+     * 当contextmenu 的时不显示的候， 给body移除绑定点击事件， 以及关闭的contextmenu 的方法
+     * @param val
+     */
+    visible(val){
+      if(val){
+        document.body.addEventListener("click",this.closeMenu)
+      }else{
+        document.body.removeEventListener("click",this.closeMenu)
       }
     }
   },
@@ -49,14 +62,23 @@ export default {
   },
   methods : {
     onCloseClick(index){
+      console.log(index) //
+      this.$store.dispatch("tagsView/removeTagsView",{action : "current", index})
+      console.log(this.$store.getters.tagsView[index])
+      let path = this.$store.getters.tagsView[index] ? this.$store.getters.tagsView[index].path :  this.$store.getters.tagsView[this.$store.getters.tagsView.length - 1].path
 
+
+      this.$router.push(path)
     },
     openMenu(event,index){
       const { x, y } = event
       this.menuStyle.left = x + 'px'
       this.menuStyle.top = y + 'px'
-      this.selectIndex= index
+      this.index= index
       this.visible = true
+    },
+    closeMenu(){
+      this.visible = false
     },
     isActive(tag){
       return tag.path === this.$route.path

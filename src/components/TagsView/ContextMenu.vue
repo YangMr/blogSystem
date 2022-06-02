@@ -1,9 +1,9 @@
 <template>
     <ul class="context-menu-container" :style="menuStyle">
       <li @click="onRefreshClick">刷新</li>
-      <li @click="onCloseRightClick">关闭</li>
+      <li @click="onCloseCurrentClick" v-if="!(index === 0)">关闭</li>
       <li @click="onCloseOtherClick">关闭其他</li>
-      <li @click="onCloseOtherClick">关闭所有</li>
+      <li @click="onCloseAllClick">关闭所有</li>
     </ul>
 </template>
 
@@ -21,10 +21,22 @@ export default {
     }
   },
   methods : {
-    onRefreshClick(){},
-    onCloseRightClick(){},
-    onCloseOtherClick(){},
-    onCloseAlllick(){}
+    onRefreshClick(){
+      const path = this.$store.getters.tagsView[this.index].path
+      this.$router.push(path)
+    },
+    onCloseCurrentClick(){
+      this.$store.dispatch("tagsView/removeTagsView",{action : "current", index : this.index})
+      let path = this.$store.getters.tagsView[this.index] ? this.$store.getters.tagsView[this.index].path :  this.$store.getters.tagsView[this.$store.getters.tagsView.length - 1]
+      this.$router.push(path)
+    },
+    onCloseOtherClick(){
+      this.$store.dispatch("tagsView/removeTagsView",{action : "other", index : this.index})
+    },
+    onCloseAllClick(){
+      this.$store.dispatch("tagsView/removeTagsView",{action : "all", index : this.index})
+      this.$router.push("/dashboard")
+    }
   }
 }
 </script>

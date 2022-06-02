@@ -9,3 +9,9 @@ export default {
   name: 'App'
 }
 </script>
+
+<style>
+.container{
+  padding : 20px;
+}
+</style>
