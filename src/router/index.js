@@ -36,6 +36,19 @@ export const constantRoutes = [
     }]
   },
 
+
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/table',
+    children: [{
+      path: 'table',
+      name: 'table',
+      component: () => import('@/views/table'),
+      meta: { title: 'table组件', icon: 'el-icon-s-home' }
+    }]
+  },
+
   {
     path: '/article',
     component: Layout,
